@@ -1,0 +1,130 @@
+#+TITLE: denote-mcp
+#+OPTIONS: toc:2
+
+An [[https://modelcontextprotocol.io][MCP]] (Model Context Protocol) server for
+[[https://protesilaos.com/emacs/denote][Denote]], so coding agents can reliably
+create, read, search, and link your Denote notes without re-discovering the
+filename rules, identifier scheme, journal subdirs, and front-matter
+conventions on every interaction.
+
+It is built on [[https://github.com/laurynas-biveinis/mcp-server-lib.el][mcp-server-lib.el]]
+and intentionally mirrors the architecture of
+[[https://github.com/laurynas-biveinis/org-mcp][org-mcp]] — if you already use
+=org-mcp= for your todo files, =denote-mcp= sits next to it and covers the
+notes side of the workflow.
+
+* Why
+
+Without =denote-mcp=, an agent has to figure out:
+
+- Where your notes live (=denote-directory=, possibly silos)
+- The filename format =YYYYMMDDTHHMMSS--title__keyword.ext=
+- How to encode keywords (sluggified, comma-separated)
+- Front-matter format per file type
+- How to construct =[[denote:ID][Title]]= links
+- Where journal entries live and how their filenames differ
+
+…and it'll get one of those wrong sometimes. =denote-mcp= calls Denote's own
+functions for all of this, so it stays correct as Denote evolves.
+
+* Installation
+
+Requires Emacs 29.1+, [[https://github.com/protesilaos/denote][denote]] 4.0+,
+and [[https://github.com/laurynas-biveinis/mcp-server-lib.el][mcp-server-lib]] 0.2+.
+
+** With ~package-vc-install~
+
+#+begin_src emacs-lisp
+(package-vc-install
+ '(denote-mcp :url "https://github.com/greggroth/denote-mcp"))
+#+end_src
+
+** With ~use-package~ + ~:vc~ (Emacs 30+)
+
+#+begin_src emacs-lisp
+(use-package denote-mcp
+  :vc (:url "https://github.com/greggroth/denote-mcp")
+  :after (denote mcp-server-lib)
+  :config
+  (denote-mcp-enable))
+#+end_src
+
+* MCP client setup
+
+=denote-mcp= follows =mcp-server-lib='s standard pattern: a small Emacs script
+that loads the package, calls =denote-mcp-enable=, and serves over stdio.
+
+#+begin_src json
+{
+  "mcpServers": {
+    "denote": {
+      "command": "emacs",
+      "args": [
+        "--batch",
+        "--eval", "(progn (require 'package) (package-initialize) (require 'denote-mcp) (denote-mcp-enable) (mcp-server-lib-stdio-loop))"
+      ]
+    }
+  }
+}
+#+end_src
+
+If you keep your Denote directory non-default, set =denote-directory= before
+calling =denote-mcp-enable=.
+
+* Configuration
+
+| Variable                                      | Default | Purpose                                        |
+|-----------------------------------------------+---------+------------------------------------------------|
+| =denote-mcp-enabled-tools=                    | all     | Symbols of tools to register                   |
+| =denote-mcp-include-journal-default=          | =t=     | Whether =list-notes= sees the journal subdir   |
+| =denote-mcp-default-file-type=                | =nil=   | Override =denote-file-type= for new notes      |
+| =denote-mcp-list-default-limit=               | =50=    | Default cap on list-style results              |
+| =denote-mcp-search-default-context-lines=     | =1=     | Reserved for future surrounding-line support   |
+| =denote-mcp-confirm-write-operations=         | =nil=   | Refuse writes unless =DENOTE_MCP_ALLOW_WRITES= |
+
+* Tools
+
+Tool names use =denote-= prefixes so they don't collide with =org-mcp=.
+
+| Tool                          | Purpose                                                |
+|-------------------------------+--------------------------------------------------------|
+| =denote-list-notes=           | List notes, filterable by title, keywords, signature, date |
+| =denote-search-notes-content= | Substring or regex search across note bodies           |
+| =denote-get-note=             | Read a note by id (front matter + body)                |
+| =denote-create-note=          | Create a new note via =denote=                         |
+| =denote-append-to-note=       | Append text to an existing note                        |
+| =denote-rename-note=          | Rename via =denote-rename-file= (preserves identifier) |
+| =denote-create-journal-entry= | Create or open a journal entry for a date              |
+| =denote-format-link=          | Build =[[denote:ID][Title]]= for a known id            |
+| =denote-list-keywords=        | All keywords across the corpus, with usage counts      |
+| =denote-find-backlinks=       | Notes that link TO a given id                          |
+
+** Resources
+
+In addition to tools, =denote-mcp= registers MCP resources so an agent (or a
+client with a resource picker) can attach a note as ambient context:
+
+| URI                          | Returns                                              |
+|------------------------------+------------------------------------------------------|
+| =denote://id/{id}=           | Full file contents (front matter + body)             |
+| =denote-meta://id/{id}=      | JSON metadata for a note                             |
+| =denote-list://all=          | JSON list of all notes (capped)                      |
+| =denote-journal://{date}=    | Full file contents of the journal entry for the date |
+
+* Development
+
+#+begin_src shell
+git clone https://github.com/greggroth/denote-mcp
+cd denote-mcp
+emacs -Q --batch -L . -L tests \
+  -l tests/denote-mcp-tests.el \
+  -f ert-run-tests-batch-and-exit
+#+end_src
+
+The tests run against a temp =denote-directory= and don't touch your real
+notes. They cover read tools, write tools, the JSON dispatcher layer, and
+the resource handlers.
+
+* License
+
+GPL-3.0-or-later. See [[file:LICENSE][LICENSE]].

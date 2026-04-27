@@ -1,0 +1,10 @@
+*.elc
+/.eldev/
+/.makem/
+/dist/
+/elpa/
+/tests/fixtures/
+*~
+\#*\#
+.DS_Store
+/.vscode/
