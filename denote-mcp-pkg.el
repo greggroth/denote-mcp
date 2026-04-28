@@ -1,4 +1,11 @@
-;; -*- no-byte-compile: t; lexical-binding: nil -*-
+;;; denote-mcp-pkg.el --- Package metadata for denote-mcp  -*- no-byte-compile: t; lexical-binding: nil -*-
+
+;;; Commentary:
+
+;; Package descriptor consumed by package.el.
+
+;;; Code:
+
 (define-package "denote-mcp" "0.1.0"
   "MCP server for Denote."
   '((emacs          "29.1")
@@ -6,3 +13,6 @@
     (mcp-server-lib "0.2.0"))
   :url "https://github.com/greggroth/denote-mcp"
   :keywords '("convenience" "files" "matching" "outlines" "hypermedia"))
+
+(provide 'denote-mcp-pkg)
+;;; denote-mcp-pkg.el ends here
