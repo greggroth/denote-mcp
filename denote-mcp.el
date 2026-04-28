@@ -142,13 +142,13 @@ to permit writes when this is t.  Useful for sandboxed sessions."
   "List denote notes with optional filters.
 
 MCP Parameters:
-  title_regex - Regex matching the note title (optional)
-  keywords - Comma-separated string or array of keywords (optional)
-  signature - Exact signature to match (optional)
-  date_from - Lower-bound date YYYY-MM-DD (optional)
-  date_to - Upper-bound date YYYY-MM-DD (optional)
-  include_journal - \"true\"/\"false\" (optional)
-  limit - Maximum number of results (optional)"
+  TITLE_REGEX - Regex matching the note title (optional)
+  KEYWORDS - Comma-separated string or array of keywords (optional)
+  SIGNATURE - Exact signature to match (optional)
+  DATE_FROM - Lower-bound date YYYY-MM-DD (optional)
+  DATE_TO - Upper-bound date YYYY-MM-DD (optional)
+  INCLUDE_JOURNAL - \"true\"/\"false\" (optional)
+  LIMIT - Maximum number of results (optional)"
   (denote-mcp--respond
     (denote-mcp-tools-list-notes
      :title-regex title_regex
@@ -168,10 +168,10 @@ MCP Parameters:
   "Search note bodies for QUERY.
 
 MCP Parameters:
-  query - Text or regex to search for
-  regex - \"true\" to treat QUERY as regex, \"false\" for literal (optional)
-  limit - Maximum number of file results (optional)
-  context_lines - Lines of context around matches (optional)"
+  QUERY - Text or regex to search for
+  REGEX - \"true\" to treat QUERY as regex, \"false\" for literal (optional)
+  LIMIT - Maximum number of file results (optional)
+  CONTEXT_LINES - Lines of context around matches (optional)"
   (denote-mcp--respond
     (denote-mcp-tools-search-notes-content
      :query query
@@ -183,7 +183,7 @@ MCP Parameters:
   "Read the metadata + body of a denote note.
 
 MCP Parameters:
-  id - Denote identifier (e.g. 20231005T142233)"
+  ID - Denote identifier (e.g. 20231005T142233)"
   (denote-mcp--respond
     (denote-mcp-tools-get-note id)))
 
@@ -191,8 +191,8 @@ MCP Parameters:
   "Return a denote link for ID.
 
 MCP Parameters:
-  id - Denote identifier
-  description - Override link text (optional; defaults to title)"
+  ID - Denote identifier
+  DESCRIPTION - Override link text (optional; defaults to title)"
   (denote-mcp--respond
     (denote-mcp-tools-format-link id description)))
 
@@ -200,8 +200,8 @@ MCP Parameters:
   "List all denote keywords with usage counts.
 
 MCP Parameters:
-  min_count - Minimum count to include (optional)
-  prefix - Restrict to keywords starting with this prefix (optional)"
+  MIN_COUNT - Minimum count to include (optional)
+  PREFIX - Restrict to keywords starting with this prefix (optional)"
   (denote-mcp--respond
     (denote-mcp-tools-list-keywords
      :min-count min_count
@@ -212,7 +212,7 @@ MCP Parameters:
 
 MCP Parameters:
   id - Denote identifier of the target note
-  limit - Maximum number of results (optional)"
+  LIMIT - Maximum number of results (optional)"
   (denote-mcp--respond
     (denote-mcp-tools-find-backlinks
      :id id
@@ -223,13 +223,14 @@ MCP Parameters:
   "Create a new denote note.
 
 MCP Parameters:
-  title - Note title
-  keywords - Comma-separated string or array of keywords (optional)
-  signature - Optional signature
-  file_type - One of: org, markdown-yaml, markdown-toml, text (optional)
-  body - Body text appended after the front matter (optional)
-  subdirectory - Directory under denote-directory (or absolute) (optional)
-  date - Date for the identifier YYYY-MM-DD (optional, defaults now)"
+  TITLE - Note title
+  KEYWORDS - Comma-separated string or array of keywords (optional)
+  SIGNATURE - Optional signature
+  FILE_TYPE - One of: org, markdown-yaml, markdown-toml, text (optional)
+  BODY - Body text appended after the front matter (optional)
+  SUBDIRECTORY - Directory under variable `denote-directory' (or
+    absolute) (optional)
+  DATE - Date for the identifier YYYY-MM-DD (optional, defaults now)"
   (denote-mcp--respond
     (denote-mcp-tools-create-note
      :title title
@@ -261,10 +262,10 @@ MCP Parameters:
   "Rename a denote note while preserving its identifier.
 
 MCP Parameters:
-  id - Denote identifier of the note to rename
-  title - New title (optional; keeps existing if blank)
-  keywords - Comma-separated string or array of new keywords (optional)
-  signature - New signature (optional)"
+  ID - Denote identifier of the note to rename
+  TITLE - New title (optional; keeps existing if blank)
+  KEYWORDS - Comma-separated string or array of new keywords (optional)
+  SIGNATURE - New signature (optional)"
   (denote-mcp--respond
     (denote-mcp-tools-rename-note
      :id id
@@ -276,7 +277,7 @@ MCP Parameters:
   "Create or open a denote-journal entry.
 
 MCP Parameters:
-  date - YYYY-MM-DD or today/tomorrow/yesterday (optional, defaults today)"
+  DATE - YYYY-MM-DD or today/tomorrow/yesterday (optional, defaults today)"
   (denote-mcp--respond
     (denote-mcp-tools-create-journal-entry
      :date date)))

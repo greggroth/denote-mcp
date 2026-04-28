@@ -151,7 +151,8 @@ Accepts nil, \"today\", \"tomorrow\", \"yesterday\", or YYYY-MM-DD."
   (or (denote-filetype-heuristics file) 'org))
 
 (defun denote-mcp-tools--title (file file-type)
-  "Return the front-matter title for FILE, falling back to the filename slug."
+  "Return the front-matter title for FILE of FILE-TYPE.
+Falls back to the filename slug."
   (or (and (fboundp 'denote-retrieve-title-or-filename)
            (ignore-errors (denote-retrieve-title-or-filename file file-type)))
       (denote-retrieve-filename-title file)
@@ -230,9 +231,9 @@ INCLUDE-JOURNAL non-nil keeps everything."
   "Return a list of summary alists for matching notes.
 TITLE-REGEX filters by title (regex on filename).  KEYWORDS is a
 list of strings; all must be present.  SIGNATURE filters by exact
-signature.  DATE-FROM and DATE-TO bound the identifier date
-(YYYY-MM-DD).  INCLUDE-JOURNAL nil omits journal entries.  LIMIT
-caps results."
+signature.  DATE-FROM and DATE-TO bound the identifier date in
+YYYY-MM-DD form.  INCLUDE-JOURNAL nil omits journal entries.
+LIMIT caps results."
   (let* ((include-journal
           (if (eq include-journal 'unset)
               denote-mcp-include-journal-default
@@ -372,7 +373,7 @@ results to keywords starting with the given string."
       (vconcat rows))))
 
 (cl-defun denote-mcp-tools-find-backlinks (&key id limit)
-  "Return notes whose body contains a reference to ID.
+  "Return notes whose body contain a reference to ID.
 Capped at LIMIT (defaults to `denote-mcp-list-default-limit')."
   (let* ((id (denote-mcp-tools--require-string "id" id))
          (limit (denote-mcp-tools--coerce-positive-int
@@ -397,8 +398,9 @@ Capped at LIMIT (defaults to `denote-mcp-list-default-limit')."
 
 (cl-defun denote-mcp-tools-create-note
     (&key title keywords signature file-type body subdirectory date)
-  "Create a new denote note and optionally append BODY.
-Returns metadata for the new note."
+  "Create a new denote note with TITLE and optionally append BODY.
+KEYWORDS, SIGNATURE, FILE-TYPE, SUBDIRECTORY, and DATE are passed
+through to denote.  Returns metadata for the new note."
   (denote-mcp-tools--ensure-write-allowed)
   (let* ((title (denote-mcp-tools--require-string "title" title))
          (keywords (denote-mcp-tools--coerce-keywords keywords))
